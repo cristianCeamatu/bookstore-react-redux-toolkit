@@ -1,13 +1,17 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+
+export const getBooks = createAsyncThunk('users/fetchBooks', async () => {
+  const response = await axios.get(
+    'https://bookstore-backend-rails.herokuapp.com/books/'
+  );
+  return response.data;
+});
 
 export const booksSlice = createSlice({
   name: 'books',
-  initialState: { books: [], filter: '' },
+  initialState: { books: [], filter: '', status: 'idle', error: '' },
   reducers: {
-    fetchBooks: (state, action) => {
-      state.books = action.payload;
-    },
     addBook: (state, action) => {
       state.books.push(action.payload);
     },
@@ -53,10 +57,22 @@ export const booksSlice = createSlice({
       });
     },
   },
+  extraReducers: {
+    [getBooks.pending]: (state) => {
+      state.status = 'loadingBooks';
+    },
+    [getBooks.fulfilled]: (state, action) => {
+      state.books = action.payload;
+      state.status = 'idle';
+    },
+    [getBooks.rejected]: (state, action) => {
+      state.error = action.error.message;
+      state.status = 'failedLoadingBooks';
+    },
+  },
 });
 
 export const {
-  fetchBooks,
   fetchError,
   addBook,
   removeBook,
@@ -65,18 +81,6 @@ export const {
   removeComment,
   updateBook,
 } = booksSlice.actions;
-
-export const getBooks = () => async (dispatch) => {
-  try {
-    const response = await axios.get(
-      'https://bookstore-backend-rails.herokuapp.com/books/'
-    );
-    const books = response.data;
-    dispatch(fetchBooks(books));
-  } catch (error) {
-    return dispatch(fetchError(error));
-  }
-};
 
 export const addBookAsync = (book) => async (dispatch) => {
   try {
