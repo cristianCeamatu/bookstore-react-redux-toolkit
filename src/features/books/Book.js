@@ -54,7 +54,7 @@ const Book = ({ book }) => {
           </li>
         </ul>
 
-        {showComments && <Comments comments={comments} book_id={id} />}
+        {showComments && <Comments comments={comments} bookId={id} />}
       </div>
       <div>
         <div className="book-status d-flex flex-column flex-md-row align-items-center pr-md-5">

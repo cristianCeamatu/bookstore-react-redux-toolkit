@@ -5,19 +5,6 @@ export const booksSlice = createSlice({
   name: 'books',
   initialState: { books: [], filter: '' },
   reducers: {
-    increment: (state) => {
-      // Redux Toolkit allows us to write "mutating" logic in reducers. It
-      // doesn't actually mutate the state because it uses the Immer library,
-      // which detects changes to a "draft state" and produces a brand new
-      // immutable state based off those changes
-      state.value += 1;
-    },
-    decrement: (state) => {
-      state.value -= 1;
-    },
-    // incrementByAmount: (state, action) => {
-    //   state.value += action.payload;
-    // },
     fetchBooks: (state, action) => {
       state.books = action.payload;
     },
@@ -41,6 +28,29 @@ export const booksSlice = createSlice({
     },
     removeBook: (state, action) => {
       state.books = state.books.filter((book) => book.id !== action.payload.id);
+    },
+    addComment: (state, action) => {
+      state.books = state.books.map((book) => {
+        const newBook = book;
+        if (book.id === action.payload.book_id) {
+          newBook.comments = [...book.comments, action.payload];
+          return newBook;
+        }
+        return book;
+      });
+    },
+    removeComment: (state, action) => {
+      state.books = state.books.map((book) => {
+        const newBook = book;
+
+        if (book.id === action.payload.book_id) {
+          newBook.comments = book.comments.filter(
+            (comment) => comment.id !== action.payload.id
+          );
+          return newBook;
+        }
+        return book;
+      });
     },
   },
 });
@@ -105,6 +115,32 @@ export const removeBookAsync = (book) => async (dispatch) => {
     );
     const payload = response.data;
     dispatch(removeBook(payload));
+  } catch (error) {
+    return dispatch(fetchError(error));
+  }
+};
+
+export const addCommentAsync = ({ text, bookId }) => async (dispatch) => {
+  try {
+    const data = { book_id: bookId, text };
+    const response = await axios.post(
+      'https://bookstore-backend-rails.herokuapp.com/comments/',
+      data
+    );
+    const payload = response.data;
+    return dispatch(addComment(payload));
+  } catch (error) {
+    return dispatch(fetchError(error));
+  }
+};
+
+export const removeCommentAsync = (comment) => async (dispatch) => {
+  try {
+    const response = await axios.delete(
+      `https://bookstore-backend-rails.herokuapp.com/comments/${comment.id}`
+    );
+    const payload = response.data;
+    return dispatch(removeComment(payload));
   } catch (error) {
     return dispatch(fetchError(error));
   }

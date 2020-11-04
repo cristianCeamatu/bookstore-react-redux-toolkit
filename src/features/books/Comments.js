@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 
-/* eslint-disable camelcase */
-const Comments = ({ comments, onDeleteComment, onNewComment, book_id }) => {
+import { addCommentAsync, removeCommentAsync } from './booksSlice';
+
+const Comments = ({ comments, bookId }) => {
+  const dispatch = useDispatch();
+
   const [text, setText] = useState('');
   const handleAddComment = () => {
-    onNewComment({ text, book_id });
+    dispatch(addCommentAsync({ text, bookId }));
     setText('');
   };
 
@@ -18,7 +22,7 @@ const Comments = ({ comments, onDeleteComment, onNewComment, book_id }) => {
       <button
         type="button"
         className="btn text-danger"
-        onClick={() => onDeleteComment(comment)}
+        onClick={() => dispatch(removeCommentAsync(comment))}
       >
         X
       </button>
@@ -59,8 +63,6 @@ Comments.propTypes = {
   comments: PropTypes.arrayOf(
     PropTypes.shape({ id: PropTypes.number, text: PropTypes.title }).isRequired
   ).isRequired,
-  book_id: PropTypes.number.isRequired,
-  onDeleteComment: PropTypes.func.isRequired,
-  onNewComment: PropTypes.func.isRequired,
+  bookId: PropTypes.number.isRequired,
 };
 export default Comments;
