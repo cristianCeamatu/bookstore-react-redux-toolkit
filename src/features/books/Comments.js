@@ -60,9 +60,7 @@ const Comments = ({ comments, bookId }) => {
 };
 
 Comments.propTypes = {
-  comments: PropTypes.arrayOf(
-    PropTypes.shape({ id: PropTypes.number, text: PropTypes.title }).isRequired
-  ).isRequired,
+  comments: PropTypes.arrayOf(PropTypes.any).isRequired,
   bookId: PropTypes.number.isRequired,
 };
 export default Comments;
