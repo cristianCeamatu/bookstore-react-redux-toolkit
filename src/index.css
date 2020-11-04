@@ -1,0 +1,78 @@
+:root {
+  --bubble-gum-pink: #ff5ab7;
+  --black: #1e1e1e;
+  --pale-grey: #f5f6fa;
+  --black-three: #121212;
+  --medium-blue: #307bbe;
+  --dodger-blue: #379cf6;
+  --white: #fafafa;
+  --black-5: rgba(0, 0, 0, 0.05);
+  --azure: #0290ff;
+}
+
+* {
+  transition: all 0.3s ease-in;
+}
+
+body {
+  background-color: var(--pale-grey);
+}
+
+.Bookstore {
+  max-width: 1024px;
+  border-radius: 4px;
+  box-shadow: 0 0 60px 0 var(--black-5);
+  background-color: var(--white);
+}
+
+.nav-brand {
+  font-family: Montserrat, sans-serif;
+  font-size: 30px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: var(--azure);
+}
+
+.nav-link.active {
+  font-weight: bold;
+}
+
+main {
+  background-color: #fafafa;
+}
+
+.book {
+  background-color: #fff;
+}
+
+.book-status-percent-circle {
+  width: 68px;
+  height: 68px;
+  border-style: solid;
+  border-width: 5px;
+  border-image-source: linear-gradient(to bottom, var(--medium-blue), var(--dodger-blue));
+  border-image-slice: 1;
+}
+
+@media (min-width: 768px) {
+  .book-status-percent {
+    border-right: 1px solid rgba(177, 177, 177, 0.664);
+  }
+
+  .nav,
+  main {
+    background-color: #fff;
+    padding: 0 100px;
+  }
+}
+
+.add-book-form {
+  padding-bottom: 250px;
+}
+
+.book-details {
+  min-width: 325px;
+}
