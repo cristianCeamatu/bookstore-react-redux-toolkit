@@ -143,10 +143,7 @@ Book.propTypes = {
     category: PropTypes.string.isRequired,
     percent: PropTypes.string.isRequired,
     current_chapter: PropTypes.string,
-    comments: PropTypes.arrayOf(
-      PropTypes.shape({ id: PropTypes.number, text: PropTypes.title })
-        .isRequired
-    ),
+    comments: PropTypes.arrayOf(PropTypes.any),
   }).isRequired,
 };
 
