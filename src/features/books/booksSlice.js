@@ -25,7 +25,9 @@ export const booksSlice = createSlice({
     updateBook: (state, action) => {
       state.books = state.books.map((book) => {
         if (book.id === action.payload.id) {
-          return action.payload;
+          book.percent = action.payload.percent;
+          book.current_chapter = action.payload.current_chapter;
+          return book;
         }
         return book;
       });
