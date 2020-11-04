@@ -13,21 +13,23 @@ const Comments = ({ comments, bookId }) => {
     setText('');
   };
 
-  const commentItems = comments.map((comment) => (
-    <article
-      className="comment px-2 py-0 border rounded bg-light shadow-sm mb-2 d-flex align-items-center justify-content-between"
-      key={comment.id}
-    >
-      {comment.text}
-      <button
-        type="button"
-        className="btn text-danger"
-        onClick={() => dispatch(removeCommentAsync(comment))}
+  const commentItems =
+    comments &&
+    comments.map((comment) => (
+      <article
+        className="comment px-2 py-0 border rounded bg-light shadow-sm mb-2 d-flex align-items-center justify-content-between"
+        key={comment.id}
       >
-        X
-      </button>
-    </article>
-  ));
+        {comment.text}
+        <button
+          type="button"
+          className="btn text-danger"
+          onClick={() => dispatch(removeCommentAsync(comment))}
+        >
+          X
+        </button>
+      </article>
+    ));
 
   return (
     <div>
