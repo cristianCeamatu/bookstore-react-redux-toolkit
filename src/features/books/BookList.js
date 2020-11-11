@@ -12,8 +12,10 @@ const BookList = () => {
 
   let bookItems = [...useSelector((state) => state.books.books)];
   const filter = useSelector((state) => state.books.filter);
-  const status = useSelector((state) => state.books.status);
-  const error = useSelector((state) => state.books.error);
+  const loadingBooks = useSelector((state) => state.books.loaders.loadingBooks);
+  const loadingBooksError = useSelector(
+    (state) => state.books.errors.loadingBooks
+  );
 
   if (filter) {
     bookItems = bookItems.filter((book) => book.category === filter);
@@ -25,18 +27,22 @@ const BookList = () => {
     )
     .map((book) => <Book key={book.id} book={book} />);
 
-  return (
-    (status === 'loadingBooks' && (
-      <div className="alert alert-info my-4 d-block">
+  if (loadingBooks)
+    return (
+      <div className="alert alert-info my-4 d-block text-center">
         {' '}
         Loading books from Heroku(sometimes he is sleeping)
       </div>
-    )) ||
-    (status === 'failedLoadingBooks' && (
-      <div className="alert alert-danger my-4 d-block">Error: {error}</div>
-    )) || (
-      <section className="book-list py-4 border-bottom">{bookItems}</section>
-    )
+    );
+
+  if (loadingBooksError)
+    return (
+      <div className="alert alert-danger my-4 d-block text-center">
+        Error: {loadingBooksError}
+      </div>
+    );
+  return (
+    <section className="book-list py-4 border-bottom">{bookItems}</section>
   );
 };
 

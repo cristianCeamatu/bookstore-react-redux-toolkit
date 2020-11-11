@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import { useDispatch } from 'react-redux';
-import { addBookAsync } from './booksSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { addBook } from './booksSlice';
 
 const BookForm = () => {
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const BookForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addBookAsync(book));
+    dispatch(addBook(book));
     setBook({
       percent: '0',
       author: '',
@@ -39,6 +39,13 @@ const BookForm = () => {
       [e.target.name]: e.target.value,
     });
   };
+
+  const addingBookLoader = useSelector(
+    (state) => state.books.loaders.addingBookLoader
+  );
+  const addingBookLoaderError = useSelector(
+    (state) => state.books.errors.addingBookLoader
+  );
 
   const categoriesOptions = categories.map((category) => (
     <option key={category}>{category}</option>
@@ -100,8 +107,9 @@ const BookForm = () => {
         <button
           type="submit"
           className="btn btn-info px-5 text-uppercase ml-md-2 mt-2 mt-lg-0"
+          disabled={addingBookLoader}
         >
-          Add book
+          {addingBookLoader ? 'Adding book...' : 'Add book'}
         </button>
       </form>
     </section>

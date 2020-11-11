@@ -1,20 +1,34 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const getBooks = createAsyncThunk('users/fetchBooks', async () => {
+export const getBooks = createAsyncThunk('books/fetchBooks', async () => {
   const response = await axios.get(
     'https://bookstore-backend-rails.herokuapp.com/books/'
   );
   return response.data;
 });
 
+export const addBook = createAsyncThunk('books/addBook', async () => {
+  const response = await axios.post(
+    'https://bookstore-backend-rails.herokuapp.com/books/',
+    data
+  );
+
+  return response.data;
+});
+
 export const booksSlice = createSlice({
   name: 'books',
-  initialState: { books: [], filter: '', status: 'idle', error: '' },
+  initialState: {
+    books: [],
+    filter: '',
+    loaders: {},
+    errors: {},
+  },
   reducers: {
-    addBook: (state, action) => {
-      state.books.push(action.payload);
-    },
+    // addBook: (state, action) => {
+    //   state.books.push(action.payload);
+    // },
     fetchError: (state, action) => {
       console.log('state :>> ', state);
       console.log('error :>> ', action.payload);
@@ -61,42 +75,43 @@ export const booksSlice = createSlice({
   },
   extraReducers: {
     [getBooks.pending]: (state) => {
-      state.status = 'loadingBooks';
+      state.loaders.loadingBooks = true;
+      state.errors.loadingBooks = false;
     },
     [getBooks.fulfilled]: (state, action) => {
       state.books = action.payload;
-      state.status = 'idle';
+      state.loaders.loadingBooks = false;
+      state.errors.loadingBooks = false;
     },
     [getBooks.rejected]: (state, action) => {
-      state.error = action.error.message;
-      state.status = 'failedLoadingBooks';
+      state.errors.loadingBooks = action.error.message;
+      state.loaders.loadingBooks = false;
+    },
+    [addBook.pending]: (state) => {
+      state.loaders.addingBookLoader = true;
+      state.errors.addingBookLoader = false;
+    },
+    [addBook.fulfilled]: (state, action) => {
+      state.books = action.payload;
+      state.loaders.addingBookLoader = false;
+      state.errors.addingBookLoader = false;
+    },
+    [addBook.rejected]: (state, action) => {
+      state.errors.addingBookLoader = action.error.message;
+      state.loaders.addingBookLoader = false;
     },
   },
 });
 
 export const {
   fetchError,
-  addBook,
+  // addBook,
   removeBook,
   changeFilter,
   addComment,
   removeComment,
   updateBook,
 } = booksSlice.actions;
-
-export const addBookAsync = (book) => async (dispatch) => {
-  try {
-    const data = book;
-    const response = await axios.post(
-      'https://bookstore-backend-rails.herokuapp.com/books/',
-      data
-    );
-    const payload = response.data;
-    dispatch(addBook(payload));
-  } catch (error) {
-    return dispatch(fetchError(error));
-  }
-};
 
 export const updateBookAsync = ({ id, chapter, percentage }) => async (
   dispatch
