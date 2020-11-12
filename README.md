@@ -15,7 +15,7 @@
 
 ## Live Demo
 
-[Frontend](https://redux-bookstore199.herokuapp.com/)
+[Frontend](https://bookstore-redux-toolkit.herokuapp.com/)
 [Rails Backend](https://github.com/cristianCeamatu/bookstore-backend-rails)
 
 ## Built With
