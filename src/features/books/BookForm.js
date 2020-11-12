@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import { useDispatch } from 'react-redux';
-import { addBookAsync } from './booksSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { addBook } from './booksSlice';
 
 const BookForm = () => {
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const BookForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addBookAsync(book));
+    dispatch(addBook(book));
     setBook({
       percent: '0',
       author: '',
@@ -40,16 +40,22 @@ const BookForm = () => {
     });
   };
 
+  const addingBookLoader = useSelector(
+    (state) => state.books.loaders.addingBookLoader
+  );
+  const addingBookLoaderError = useSelector(
+    (state) => state.books.errors.addingBookLoader
+  );
+
   const categoriesOptions = categories.map((category) => (
     <option key={category}>{category}</option>
   ));
 
   const { title, category, author } = book;
   return (
-    <section className="add-book-form pt-4">
-      <h3 className="text-secondary px-3">ADD NEW BOOK</h3>
+    <section className="add-book-form form-group bg-white w-100 px-2 py-4 shadow-sm mb-0">
       <form
-        className="d-flex align-items-stretch align-items-md-center flex-wrap flex-column flex-md-row justify-content-center justify-content-lg-between shadow-top w-100 py-3 px-2 bg-light"
+        className="d-flex align-items-stretch align-items-md-center flex-wrap flex-column flex-md-row justify-content-center w-100 py-3 px-2"
         onSubmit={handleSubmit}
       >
         <div className="form-group mb-0">
@@ -100,10 +106,16 @@ const BookForm = () => {
         <button
           type="submit"
           className="btn btn-info px-5 text-uppercase ml-md-2 mt-2 mt-lg-0"
+          disabled={addingBookLoader}
         >
-          Add book
+          {addingBookLoader ? 'Adding book...' : 'Add book'}
         </button>
       </form>
+      {addingBookLoaderError && (
+        <div class="alert alert-danger text-center mx-auto w-75">
+          {addingBookLoaderError}
+        </div>
+      )}
     </section>
   );
 };

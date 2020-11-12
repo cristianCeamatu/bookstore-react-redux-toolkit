@@ -1,29 +1,57 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
+// Store Actions
+import {
+  addComment,
+  removeCommentAsync,
+  setUpdatingBookdId,
+} from './booksSlice';
 
-/* eslint-disable camelcase */
-const Comments = ({ comments, onDeleteComment, onNewComment, book_id }) => {
+const Comments = ({ comments, bookId }) => {
+  const dispatch = useDispatch();
+
   const [text, setText] = useState('');
   const handleAddComment = () => {
-    onNewComment({ text, book_id });
+    dispatch(setUpdatingBookdId(bookId));
+    dispatch(addComment({ text, bookId }));
     setText('');
   };
 
-  const commentItems = comments.map((comment) => (
-    <article
-      className="comment px-2 py-0 border rounded bg-light shadow-sm mb-2 d-flex align-items-center justify-content-between"
-      key={comment.id}
-    >
-      {comment.text}
-      <button
-        type="button"
-        className="btn text-danger"
-        onClick={() => onDeleteComment(comment)}
-      >
-        X
-      </button>
-    </article>
-  ));
+  const commentItems =
+    comments &&
+    comments.map((comment) => {
+      const createdAt = moment(
+        new Date(comment.created_at),
+        'YYYYMMDD'
+      ).fromNow();
+
+      return (
+        <article
+          className="comment px-2 py-0 border rounded bg-light shadow-sm mb-2"
+          key={comment.id}
+        >
+          <div className="d-flex align-items-center justify-content-between">
+            {comment.text}
+            <button
+              type="button"
+              className="btn text-danger"
+              onClick={() => dispatch(removeCommentAsync(comment))}
+            >
+              X
+            </button>
+          </div>
+          <p className="text-right text-secondary mr-3 font-italic h6">
+            {createdAt}
+          </p>
+        </article>
+      );
+    });
+
+  const updatingBookId = useSelector((state) => state.books.updatingBookId);
+  const loader = useSelector((state) => state.books.loaders.addComment);
+  const error = useSelector((state) => state.books.errors.addComment);
 
   return (
     <div>
@@ -48,19 +76,22 @@ const Comments = ({ comments, onDeleteComment, onNewComment, book_id }) => {
           className="btn btn-info mx-auto d-block"
           onClick={handleAddComment}
         >
-          Add comment
+          {loader && updatingBookId === bookId
+            ? 'Adding comment...'
+            : 'Add comment'}
         </button>
       </div>
+      {error && (
+        <div className="alert alert-danger text-center mx-auto mt-2 w-75">
+          {error}
+        </div>
+      )}
     </div>
   );
 };
 
 Comments.propTypes = {
-  comments: PropTypes.arrayOf(
-    PropTypes.shape({ id: PropTypes.number, text: PropTypes.title }).isRequired
-  ).isRequired,
-  book_id: PropTypes.number.isRequired,
-  onDeleteComment: PropTypes.func.isRequired,
-  onNewComment: PropTypes.func.isRequired,
+  comments: PropTypes.arrayOf(PropTypes.any).isRequired,
+  bookId: PropTypes.number.isRequired,
 };
 export default Comments;

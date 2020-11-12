@@ -23,7 +23,7 @@ const CategoryFilter = () => {
   ));
 
   return (
-    <div className="filter form-group mb-4 bg-white w-100 px-2 py-3 shadow-sm">
+    <div className="filter form-group bg-white w-100 px-2 py-4 shadow-sm mb-0">
       <label
         htmlFor="category"
         className="d-flex align-items-center justify-content-center mb-0"

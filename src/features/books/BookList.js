@@ -8,10 +8,14 @@ const BookList = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getBooks());
-  }, []);
+  }, [dispatch]);
 
   let bookItems = [...useSelector((state) => state.books.books)];
   const filter = useSelector((state) => state.books.filter);
+  const loadingBooks = useSelector((state) => state.books.loaders.loadingBooks);
+  const loadingBooksError = useSelector(
+    (state) => state.books.errors.loadingBooks
+  );
 
   if (filter) {
     bookItems = bookItems.filter((book) => book.category === filter);
@@ -23,6 +27,20 @@ const BookList = () => {
     )
     .map((book) => <Book key={book.id} book={book} />);
 
+  if (loadingBooks)
+    return (
+      <div className="alert alert-info my-4 d-block text-center">
+        {' '}
+        Loading books from Heroku(sometimes he is sleeping)
+      </div>
+    );
+
+  if (loadingBooksError)
+    return (
+      <div className="alert alert-danger my-4 d-block text-center">
+        Error: {loadingBooksError}
+      </div>
+    );
   return (
     <section className="book-list py-4 border-bottom">{bookItems}</section>
   );
