@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
+// Assets
 import userIcon from '../../assets/user.svg';
-
+import brandIcon from '../../assets/brand.ico';
+// Components
 import CategoryFilter from './CategoryFilter.js';
+import BookForm from './BookForm';
 
 const Nav = () => {
-  const [displayFilter, setDisplayFilter] = useState(false);
+  const [currentForm, setCurrentForm] = useState(false);
 
   useEffect(() => {
     const handleNavLickClick = (e) => {
-      if (e.target.id === 'filter') {
-        e.preventDefault();
-        setDisplayFilter((displayFilter) => !displayFilter);
-      }
+      e.preventDefault();
+      setCurrentForm((currentForm) =>
+        currentForm === e.target.id ? false : e.target.id
+      );
+
       document
         .querySelectorAll('.active')
         .forEach((item) => item.classList.remove('active'));
@@ -32,13 +36,18 @@ const Nav = () => {
       >
         <ul className="list-unstyled mb-0 d-flex align-items-center justify-content-center flex-wrap">
           <li className="px-5 px-md-0">
-            <a href="/" className="nav-brand mr-3">
-              Bookstore CMS
-            </a>
-          </li>
-          <li>
-            <a href="/" className="nav-link active text-uppercase text-dark">
-              Books
+            <a
+              href="/"
+              className="nav-brand mr-3 d-flex align-items-center text-decoration-none"
+            >
+              <img
+                src={brandIcon}
+                alt="Brand Icon"
+                width="30"
+                height="30"
+                className="mr-1"
+              />
+              MyLibrary
             </a>
           </li>
           <li>
@@ -48,6 +57,16 @@ const Nav = () => {
               id="filter"
             >
               Categories
+            </a>
+          </li>
+
+          <li>
+            <a
+              href="/"
+              className="nav-link text-uppercase text-muted"
+              id="addBook"
+            >
+              New book
             </a>
           </li>
         </ul>
@@ -67,7 +86,8 @@ const Nav = () => {
         </ul>
       </nav>
 
-      {displayFilter && <CategoryFilter />}
+      {currentForm === 'filter' && <CategoryFilter />}
+      {currentForm === 'addBook' && <BookForm />}
     </>
   );
 };

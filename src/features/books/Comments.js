@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
-
+import moment from 'moment';
+// Store Actions
 import { addCommentAsync, removeCommentAsync } from './booksSlice';
 
 const Comments = ({ comments, bookId }) => {
@@ -15,21 +16,33 @@ const Comments = ({ comments, bookId }) => {
 
   const commentItems =
     comments &&
-    comments.map((comment) => (
-      <article
-        className="comment px-2 py-0 border rounded bg-light shadow-sm mb-2 d-flex align-items-center justify-content-between"
-        key={comment.id}
-      >
-        {comment.text}
-        <button
-          type="button"
-          className="btn text-danger"
-          onClick={() => dispatch(removeCommentAsync(comment))}
+    comments.map((comment) => {
+      const createdAt = moment(
+        new Date(comment.created_at),
+        'YYYYMMDD'
+      ).fromNow();
+
+      return (
+        <article
+          className="comment px-2 py-0 border rounded bg-light shadow-sm mb-2"
+          key={comment.id}
         >
-          X
-        </button>
-      </article>
-    ));
+          <div className="d-flex align-items-center justify-content-between">
+            {comment.text}
+            <button
+              type="button"
+              className="btn text-danger"
+              onClick={() => dispatch(removeCommentAsync(comment))}
+            >
+              X
+            </button>
+          </div>
+          <p className="text-right text-secondary mr-3 font-italic h6">
+            {createdAt}
+          </p>
+        </article>
+      );
+    });
 
   return (
     <div>

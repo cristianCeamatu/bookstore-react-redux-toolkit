@@ -42,6 +42,7 @@ body {
 
 main {
   background-color: #fafafa;
+
 }
 
 .book {
@@ -67,10 +68,6 @@ main {
     background-color: #fff;
     padding: 0 100px;
   }
-}
-
-.add-book-form {
-  padding-bottom: 250px;
 }
 
 .book-details {
