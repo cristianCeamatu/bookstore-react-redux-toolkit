@@ -112,6 +112,11 @@ const BookForm = () => {
           {addingBookLoader ? 'Adding book...' : 'Add book'}
         </button>
       </form>
+      {addingBookLoaderError && (
+        <div class="alert alert-danger text-center mx-auto w-75">
+          {addingBookLoaderError}
+        </div>
+      )}
     </section>
   );
 };

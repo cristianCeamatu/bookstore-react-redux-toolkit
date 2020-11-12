@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
-import { updateBookAsync, removeBookAsync } from './booksSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateBook, setUpdatingBookdId, removeBookAsync } from './booksSlice';
 
 import Comments from './Comments';
 
@@ -18,13 +18,18 @@ const Book = ({ book }) => {
   const [chapter, setChapter] = useState(book.current_chapter);
   const handleUpdateBook = (e) => {
     e.preventDefault();
-    dispatch(updateBookAsync({ id: book.id, chapter, percentage }));
+    dispatch(setUpdatingBookdId(book.id));
+    dispatch(updateBook({ id: book.id, chapter, percentage }));
   };
 
   const handleClick = (e) => {
     e.preventDefault();
     dispatch(removeBookAsync(book));
   };
+
+  const updatingBookId = useSelector((state) => state.books.updatingBookId);
+  const loader = useSelector((state) => state.books.loaders.updateBook);
+  const error = useSelector((state) => state.books.errors.updateBook);
 
   const { title, author, category, comments, id } = book;
 
@@ -128,9 +133,16 @@ const Book = ({ book }) => {
           className="btn btn-info rounded px-4 py-1 text-uppercase mt-2 d-block mx-auto"
           onClick={handleUpdateBook}
         >
-          Update status
+          {loader && updatingBookId === id
+            ? 'Updating database...'
+            : 'Update status'}
         </button>
       </div>
+      {error && (
+        <div className="alert alert-danger text-center mx-auto w-75">
+          {error}
+        </div>
+      )}
     </article>
   );
 };

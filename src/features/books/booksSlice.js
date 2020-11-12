@@ -8,14 +8,26 @@ export const getBooks = createAsyncThunk('books/fetchBooks', async () => {
   return response.data;
 });
 
-export const addBook = createAsyncThunk('books/addBook', async () => {
+export const addBook = createAsyncThunk('books/addBook', async (book) => {
+  const data = book;
   const response = await axios.post(
     'https://bookstore-backend-rails.herokuapp.com/books/',
     data
   );
-
   return response.data;
 });
+
+export const updateBook = createAsyncThunk(
+  'books/updateBook',
+  async ({ id, chapter, percentage }) => {
+    const data = { current_chapter: chapter, percent: percentage };
+    const response = await axios.put(
+      `https://bookstore-backend-rails.herokuapp.com/books/${id}`,
+      data
+    );
+    return response.data;
+  }
+);
 
 export const booksSlice = createSlice({
   name: 'books',
@@ -24,11 +36,9 @@ export const booksSlice = createSlice({
     filter: '',
     loaders: {},
     errors: {},
+    updatingBookId: false,
   },
   reducers: {
-    // addBook: (state, action) => {
-    //   state.books.push(action.payload);
-    // },
     fetchError: (state, action) => {
       console.log('state :>> ', state);
       console.log('error :>> ', action.payload);
@@ -36,15 +46,8 @@ export const booksSlice = createSlice({
     changeFilter: (state, action) => {
       state.filter = action.payload;
     },
-    updateBook: (state, action) => {
-      state.books = state.books.map((book) => {
-        if (book.id === action.payload.id) {
-          book.percent = action.payload.percent;
-          book.current_chapter = action.payload.current_chapter;
-          return book;
-        }
-        return book;
-      });
+    setUpdatingBookdId: (state, action) => {
+      state.updatingBookId = action.payload;
     },
     removeBook: (state, action) => {
       state.books = state.books.filter((book) => book.id !== action.payload.id);
@@ -92,7 +95,7 @@ export const booksSlice = createSlice({
       state.errors.addingBookLoader = false;
     },
     [addBook.fulfilled]: (state, action) => {
-      state.books = action.payload;
+      state.books.push(action.payload);
       state.loaders.addingBookLoader = false;
       state.errors.addingBookLoader = false;
     },
@@ -100,34 +103,39 @@ export const booksSlice = createSlice({
       state.errors.addingBookLoader = action.error.message;
       state.loaders.addingBookLoader = false;
     },
+    [updateBook.pending]: (state) => {
+      state.loaders.updateBook = true;
+      state.errors.updateBook = false;
+    },
+    [updateBook.fulfilled]: (state, action) => {
+      state.books.map((book) => {
+        if (book.id === action.payload.id) {
+          book.percent = action.payload.percent;
+          book.current_chapter = action.payload.current_chapter;
+          return book;
+        }
+        return book;
+      });
+      state.loaders.updateBook = false;
+      state.errors.updateBook = false;
+      state.updatingBookId = false;
+    },
+    [updateBook.rejected]: (state, action) => {
+      state.errors.updateBook = action.error.message;
+      state.loaders.updateBook = false;
+      state.updatingBookId = false;
+    },
   },
 });
 
 export const {
   fetchError,
-  // addBook,
+  setUpdatingBookdId,
   removeBook,
   changeFilter,
   addComment,
   removeComment,
-  updateBook,
 } = booksSlice.actions;
-
-export const updateBookAsync = ({ id, chapter, percentage }) => async (
-  dispatch
-) => {
-  try {
-    const data = { current_chapter: chapter, percent: percentage };
-    const response = await axios.put(
-      `https://bookstore-backend-rails.herokuapp.com/books/${id}`,
-      data
-    );
-    const payload = response.data;
-    dispatch(updateBook(payload));
-  } catch (error) {
-    return dispatch(fetchError(error));
-  }
-};
 
 export const removeBookAsync = (book) => async (dispatch) => {
   try {
