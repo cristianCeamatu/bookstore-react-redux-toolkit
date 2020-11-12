@@ -139,7 +139,7 @@ const Book = ({ book }) => {
         </button>
       </div>
       {error && (
-        <div className="alert alert-danger text-center mx-auto w-75">
+        <div className="alert alert-danger text-center mt-2 mx-auto w-75">
           {error}
         </div>
       )}

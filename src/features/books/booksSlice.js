@@ -29,6 +29,18 @@ export const updateBook = createAsyncThunk(
   }
 );
 
+export const addComment = createAsyncThunk(
+  'books/addComment',
+  async ({ text, bookId }) => {
+    const data = { book_id: bookId, text };
+    const response = await axios.post(
+      'https://bookstore-backend-rails.herokuapp.com/comments/',
+      data
+    );
+    return response.data;
+  }
+);
+
 export const booksSlice = createSlice({
   name: 'books',
   initialState: {
@@ -51,16 +63,6 @@ export const booksSlice = createSlice({
     },
     removeBook: (state, action) => {
       state.books = state.books.filter((book) => book.id !== action.payload.id);
-    },
-    addComment: (state, action) => {
-      state.books = state.books.map((book) => {
-        const newBook = book;
-        if (book.id === action.payload.book_id) {
-          newBook.comments = [...book.comments, action.payload];
-          return newBook;
-        }
-        return book;
-      });
     },
     removeComment: (state, action) => {
       state.books = state.books.map((book) => {
@@ -125,6 +127,28 @@ export const booksSlice = createSlice({
       state.loaders.updateBook = false;
       state.updatingBookId = false;
     },
+    [addComment.pending]: (state) => {
+      state.loaders.addComment = true;
+      state.errors.addComment = false;
+    },
+    [addComment.fulfilled]: (state, action) => {
+      state.books = state.books.map((book) => {
+        const newBook = book;
+        if (book.id === action.payload.book_id) {
+          newBook.comments = [...book.comments, action.payload];
+          return newBook;
+        }
+        return book;
+      });
+      state.loaders.addComment = false;
+      state.errors.addComment = false;
+      state.updatingBookId = false;
+    },
+    [addComment.rejected]: (state, action) => {
+      state.errors.addComment = action.error.message;
+      state.loaders.addComment = false;
+      state.updatingBookId = false;
+    },
   },
 });
 
@@ -133,7 +157,6 @@ export const {
   setUpdatingBookdId,
   removeBook,
   changeFilter,
-  addComment,
   removeComment,
 } = booksSlice.actions;
 
@@ -144,20 +167,6 @@ export const removeBookAsync = (book) => async (dispatch) => {
     );
     const payload = response.data;
     dispatch(removeBook(payload));
-  } catch (error) {
-    return dispatch(fetchError(error));
-  }
-};
-
-export const addCommentAsync = ({ text, bookId }) => async (dispatch) => {
-  try {
-    const data = { book_id: bookId, text };
-    const response = await axios.post(
-      'https://bookstore-backend-rails.herokuapp.com/comments/',
-      data
-    );
-    const payload = response.data;
-    return dispatch(addComment(payload));
   } catch (error) {
     return dispatch(fetchError(error));
   }

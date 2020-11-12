@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 // Store Actions
-import { addCommentAsync, removeCommentAsync } from './booksSlice';
+import {
+  addComment,
+  removeCommentAsync,
+  setUpdatingBookdId,
+} from './booksSlice';
 
 const Comments = ({ comments, bookId }) => {
   const dispatch = useDispatch();
 
   const [text, setText] = useState('');
   const handleAddComment = () => {
-    dispatch(addCommentAsync({ text, bookId }));
+    dispatch(setUpdatingBookdId(bookId));
+    dispatch(addComment({ text, bookId }));
     setText('');
   };
 
@@ -44,6 +49,10 @@ const Comments = ({ comments, bookId }) => {
       );
     });
 
+  const updatingBookId = useSelector((state) => state.books.updatingBookId);
+  const loader = useSelector((state) => state.books.loaders.addComment);
+  const error = useSelector((state) => state.books.errors.addComment);
+
   return (
     <div>
       {commentItems}
@@ -67,9 +76,16 @@ const Comments = ({ comments, bookId }) => {
           className="btn btn-info mx-auto d-block"
           onClick={handleAddComment}
         >
-          Add comment
+          {loader && updatingBookId === bookId
+            ? 'Adding comment...'
+            : 'Add comment'}
         </button>
       </div>
+      {error && (
+        <div className="alert alert-danger text-center mx-auto mt-2 w-75">
+          {error}
+        </div>
+      )}
     </div>
   );
 };
